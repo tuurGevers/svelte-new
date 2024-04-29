@@ -8,7 +8,7 @@ export async function FetchedImage(query  ="trumpet") {
         };
 
         // Make a POST request
-        const response = await axios.post('http://127.0.0.1:63886/searchstring', data);
+        const response = await axios.post('http://192.168.0.129:8081/searchstring', data);
         console.log(response.data.data[0].url); // Assuming the response has a URL property
         return response.data.data[0].url;
     } catch (error) {

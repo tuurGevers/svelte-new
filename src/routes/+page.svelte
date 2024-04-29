@@ -6,7 +6,9 @@
 
     let container;
     let cube;
+    let frame
     let searchQuery = '';
+    let scene
 
     const reloadModel = async () => {
         const url = await FetchedImage(searchQuery);
@@ -19,7 +21,7 @@
                 const cubeHeight = 1;
                 const cubeWidth = cubeHeight * aspectRatio;
 
-                const geometry = new THREE.BoxGeometry(cubeWidth * 4, cubeHeight * 4, 0.2);
+                const geometry = new THREE.BoxGeometry(cubeWidth * 4, cubeHeight * 4, 0.1);
                 const material = new THREE.MeshBasicMaterial({
                     map: texture,
                     transparent: true,
@@ -36,12 +38,23 @@
                 // Update the scene
                 cube.position.set(0, 0, 0);
                 scene.add(cube);
+
+                // Update the frame
+                const frameGeometry = new THREE.BoxGeometry(cubeWidth * 4 +0.2, cubeHeight * 4  +0.2, 0.2);
+                frame.geometry.dispose(); // Dispose the old geometry
+                frame.geometry = frameGeometry; // Assign the new geometry
+
+
+                frame.scale.set(1, 1, 1); // Reset the scale
+                frame.position.set(0, 0, -0.1);
+                scene.add(frame);
+
             });
         }
     };
 
     onMount(() => {
-        const scene = new THREE.Scene();
+        scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
@@ -51,9 +64,16 @@
         camera.position.set(0, 0, 5);
         controls.update();
 
-        const geometry = new THREE.BoxGeometry(5, 5, 0.2);
+        const geometry = new THREE.BoxGeometry(5, 5, 0.1);
         const material = new THREE.MeshBasicMaterial();
         cube = new THREE.Mesh(geometry, material);
+
+        //initialize black frame
+        const frameGeometry = new THREE.BoxGeometry(5.2, 5.2, 0.2);
+        const frameMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        frame = new THREE.Mesh(frameGeometry, frameMaterial);
+        frame.position.set(0, 0, -0.1);
+        scene.add(frame);
         scene.add(cube);
 
         const animate = () => {
@@ -81,7 +101,7 @@
     <div class="search-container">
         <div bind:this={container} class="viewer"></div>
         <div>
-            <input type="text" placeholder="Search for an image" bind:value={searchQuery} />
+            <textarea type="text" placeholder="Search for an image" bind:value={searchQuery} />
             <button on:click={reloadModel}>Search</button>
         </div>
     </div>
@@ -100,6 +120,10 @@
         justify-content: center;
         align-items: center;
         width: 100vw;
+        background-image: url("./background.jpg");
+        background-size: cover;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
     .search-container {
@@ -108,5 +132,20 @@
         justify-content: center;
         align-items: center;
         width: 50vw;
+    }
+    @media (max-width: 768px) {
+        .search-container {
+            width: 80vw;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .search-container {
+            width: 80%;
+        }
+        body{
+            background-size: 100% 100%;
+            width: 100%;
+        }
     }
 </style>
