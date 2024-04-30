@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import * as THREE from "three";
     import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-    import { FetchedImage } from "../lib/api";
+    import { FetchedImage, FetchProductsByUrl } from "../lib/api";
 
     let container;
     let cube;
@@ -58,6 +58,7 @@
 
     async function reloadModel() {
         const url = await FetchedImage(searchQuery);
+        const products = await FetchProductsByUrl(url);
         currentImage = url;
         if (url) {
             const textureLoader = new THREE.TextureLoader();
